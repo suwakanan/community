@@ -1,8 +1,12 @@
 package cn.yohane.community.dto;
 
+import lombok.Data;
+
 /**
  * Created by SuwaKanan on 2020/06/08
  */
+// @Data是lombok自动生成getter和setter
+//@Data
 public class AccessTokenDTO {
     private String client_id;
     private String client_secret;

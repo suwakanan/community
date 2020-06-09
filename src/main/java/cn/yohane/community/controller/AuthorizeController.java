@@ -43,7 +43,6 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                           HttpServletRequest request,
                            HttpServletResponse response) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
@@ -53,7 +52,7 @@ public class AuthorizeController {
         accessTokenDTO.setState(state);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if (githubUser != null) {
+        if (githubUser != null && githubUser.getId() != null) {
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setToken(token);
@@ -61,6 +60,9 @@ public class AuthorizeController {
             user.setAccountId(String.valueOf(githubUser.getId()));// 把int强转成string
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(githubUser.getAvatar_url());
+            //user.setAvatarUrl(githubUser.getAvatarUrl()); //如果使用驼峰可以试试这个方式
+
             // 登录后如果获取到token就将数据写入到数据库中
             userMapper.insert(user);
             // 通过response写入cookie

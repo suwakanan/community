@@ -1,28 +1,24 @@
 package cn.yohane.community.controller;
 
 import cn.yohane.community.dto.PaginationDTO;
-import cn.yohane.community.dto.QuestionDTO;
-import cn.yohane.community.mapper.QuestionMapper;
 import cn.yohane.community.mapper.UserMapper;
-import cn.yohane.community.model.Question;
 import cn.yohane.community.model.User;
 import cn.yohane.community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
- * Created by SuwaKanan on 2020/06/08
+ * Created by SuwaKanan on 2020/06/09
  */
-
 @Controller
-public class IndexController {
+public class ProfileController {
 
     @Autowired
     private UserMapper userMapper;
@@ -30,18 +26,14 @@ public class IndexController {
     @Autowired
     private QuestionService questionService;
 
-    // 这边代码可能存在问题
-
-    @GetMapping("/")
-    public String index(HttpServletRequest request,
-                        Model model,
-                        @RequestParam(name = "page", defaultValue = "1") Integer page,
-                        @RequestParam(name = "size", defaultValue = "5") Integer size) {
-        // 这是2020.06.09新增内容
-        /*if (request.getCookies() == null) {
-            return "index";
-        }*/
-        // 这里如果第一次访问不是首页的话，就没有登录态
+    // {action}可以动态的切换路径
+    @GetMapping("/profile/{action}")
+    public String profile(HttpServletRequest request,
+                          @PathVariable(name = "action") String action,
+                          Model model,
+                          @RequestParam(name = "page", defaultValue = "1") Integer page,
+                          @RequestParam(name = "size", defaultValue = "5") Integer size) {
+        User user = null;
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length != 0) {
             for (Cookie cookie : cookies) {
@@ -53,7 +45,7 @@ public class IndexController {
                  */
                 if (cookie.getName().equals("token")) {
                     String token = cookie.getValue();
-                    User user = userMapper.findByToken(token);
+                    user = userMapper.findByToken(token);
                     if (user != null) {
                         request.getSession().setAttribute("user", user);
                     }
@@ -61,10 +53,22 @@ public class IndexController {
                 }
             }
         }
-        // 查询数据库中的文章
-        PaginationDTO pagination = questionService.list(page, size);
-        model.addAttribute("pagination", pagination);
 
-        return "index";
+        // 如果没有登录的话
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        if ("questions".equals(action)) {
+            model.addAttribute("section", "questions");
+            model.addAttribute("sectionName", "我的提问");
+        } else if ("replies".equals(action)) {
+            model.addAttribute("section", "replies");
+            model.addAttribute("sectionName","最新回复");
+        }
+
+        PaginationDTO paginationDTO = questionService.list(user.getId(), page, size);
+        model.addAttribute("pagination", paginationDTO);
+        return "profile";
     }
 }
