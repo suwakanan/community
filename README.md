@@ -9,3 +9,6 @@
 [Git](https://git-scm.com/download)、
 [Visual Paradigm](https://www.visual-paradigm.com)、
 [lombok](https://projectlombok.org/)、
+
+## 命令
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate

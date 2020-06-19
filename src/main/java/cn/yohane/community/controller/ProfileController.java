@@ -21,9 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 public class ProfileController {
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private QuestionService questionService;
 
     // {action}可以动态的切换路径
@@ -33,29 +30,10 @@ public class ProfileController {
                           Model model,
                           @RequestParam(name = "page", defaultValue = "1") Integer page,
                           @RequestParam(name = "size", defaultValue = "5") Integer size) {
-        User user = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length != 0) {
-            for (Cookie cookie : cookies) {
-                /**
-                 * 引号token是key，name也是key
-                 * name是判断键的名字是不是“token”，value获得键名为“token”的值
-                 * 因此判断如果name等于“token”字符串，也就是名字跟数据库中token名字相同，那么它的值就是token的value
-                 * cookie是以键值对保存的，getName是获取到cookie的键，getValue是获取到对应的值
-                 */
-                if (cookie.getName().equals("token")) {
-                    String token = cookie.getValue();
-                    user = userMapper.findByToken(token);
-                    if (user != null) {
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
 
-        // 如果没有登录的话
+        User user = (User)request.getSession().getAttribute("user");
         if (user == null) {
+            model.addAttribute("error", "用户未登录");
             return "redirect:/";
         }
 
