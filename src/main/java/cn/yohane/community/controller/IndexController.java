@@ -30,7 +30,6 @@ public class IndexController {
             return "index";
         }*/
         // 这里如果第一次访问不是首页的话，就没有登录态
-
         // 查询数据库中的文章
         PaginationDTO pagination = questionService.list(page, size);
         model.addAttribute("pagination", pagination);

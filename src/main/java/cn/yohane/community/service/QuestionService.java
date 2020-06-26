@@ -229,8 +229,11 @@ public class QuestionService {
         Integer offset = size * (page - 1);
 //        List<Question> questions = questionMapper.listByUserId(userId,offset, size);// 每一页的列表
         QuestionExample example = new QuestionExample();
+
         example.createCriteria().andCreatorEqualTo(userId);
+//        example.setOrderByClause("gmt_create desc");
         List<Question> questions = questionMapper.selectByExampleWithRowbounds(example, new RowBounds(offset, size));
+
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for (Question question : questions) {
@@ -270,6 +273,7 @@ public class QuestionService {
             question.setGmtModified(question.getGmtCreate());
             question.setViewCount(0);
             question.setLikeCount(0);
+            question.setCommentCount(0);
             questionMapper.insert(question);
         } else {
             // 更新

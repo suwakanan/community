@@ -20,7 +20,7 @@
   </update>
   <update id="incCommentCount" parameterType="cn.yohane.community.model.Question">
     UPDATE question
-    SET comment_count = comment_count + #{comment_count,jdbcType=INTEGER}
+    SET comment_count = comment_count + #{commentCount,jdbcType=INTEGER}
     WHERE id = #{id}
   </update>
 </mapper>

@@ -70,7 +70,6 @@ public class AuthorizeController {
 //            user.setGmtCreate(System.currentTimeMillis());
 //            user.setGmtModified(user.getGmtCreate());
             //user.setAvatarUrl(githubUser.getAvatarUrl()); //如果使用驼峰可以试试这个方式
-
             // 登录后如果获取到token就将数据写入到数据库中
 //            userMapper.insert(user);
             userService.createOrUpdate(user);
